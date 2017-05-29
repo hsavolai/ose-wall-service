@@ -41,6 +41,8 @@ public class MessageRepositoryTest {
             Charset.forName("utf8"));
     private MockMvc mockMvc;
 
+    private String context = "/v1/message/";
+    
     @SuppressWarnings("rawtypes")
 	private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
@@ -91,7 +93,7 @@ public class MessageRepositoryTest {
          message.setAlias("foo_x");
          message.setContent("bar_x");
          message.setDate("10101010_x");
-        mockMvc.perform(post("/message/")
+        mockMvc.perform(post(this.context+"")
                 .content(this.json(message))
                 .contentType(contentTypeJson))
                 .andExpect(status().isCreated());
@@ -99,7 +101,7 @@ public class MessageRepositoryTest {
     
     @Test
     public void messageIsFound() throws Exception {
-        mockMvc.perform(get("/message/1"))
+        mockMvc.perform(get(this.context+"1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentTypeHalJson))
                 .andExpect(jsonPath("$.alias", is(this.messageList.get(0).getAlias())))
@@ -109,7 +111,7 @@ public class MessageRepositoryTest {
     
     @Test
     public void getMessages() throws Exception {
-        mockMvc.perform(get("/message"))
+        mockMvc.perform(get(this.context))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentTypeHalJson))
                 .andExpect(jsonPath("$._embedded.message", hasSize(greaterThan(6))));             
@@ -117,15 +119,15 @@ public class MessageRepositoryTest {
     
     @Test
     public void messageIsRemoved() throws Exception {
-    	mockMvc.perform(get("/message/2"))
+    	mockMvc.perform(get(this.context+"2"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(contentTypeHalJson))
         .andExpect(jsonPath("$.alias", is(this.messageList.get(1).getAlias())))
         .andExpect(jsonPath("$.content", is(this.messageList.get(1).getContent())))
         .andExpect(jsonPath("$.date", is(this.messageList.get(1).getDate())));
-        mockMvc.perform(delete("/message/2"))
+        mockMvc.perform(delete(this.context+"2"))
 				.andExpect(status().isNoContent());
-        mockMvc.perform(get("/message/2"))
+        mockMvc.perform(get(this.context+"2"))
         .andExpect(status().isNotFound());    
         }
 
